@@ -17,7 +17,7 @@ steps:
      repo2:
        from_secret: repo2
    commands:
-      - git clone --depth=1 $repo1 -b 4.9-Q msm8953 && cd msm8953
+      - git clone --depth=1 $repo1 -b 4.9-R-caf msm8953 && cd msm8953
       - git clone --depth=1 --single-branch https://github.com/mvaisakh/gcc-arm64.git gcc
       - export BUILD_START=$(date +"%s")
       - export CROSS_COMPILE="$(pwd)/gcc/bin/aarch64-elf-"
