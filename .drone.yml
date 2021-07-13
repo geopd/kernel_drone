@@ -6,7 +6,7 @@ workspace:
 
 steps:
  - name: compile
-   image: geopd/builder:update
+   image: geopd/builder:drone
    environment:
      bottoken:
        from_secret: bottoken
@@ -17,21 +17,7 @@ steps:
      repo2:
        from_secret: repo2
    commands:
-      - git clone --depth=1 $repo1 -b 4.9-R msm8953 && cd msm8953
-      - git clone --depth=1 --single-branch https://github.com/mvaisakh/gcc-arm64.git gcc
-      - export BUILD_START=$(date +"%s")
-      - export CROSS_COMPILE="$(pwd)/gcc/bin/aarch64-elf-"
-      - export ARCH=arm64
-      - make O=out sakura_defconfig
-      - make O=out -j"$(nproc --all)"
-      - export BUILD_END=$(date +"%s")
-      - export DIFF=$((BUILD_END - BUILD_START))
-      - git clone $repo2
-      - cp out/arch/arm64/boot/Image.gz-dtb AnyKernel3 && cd AnyKernel3
-      - export ZIPNAME=Mystique-Kernel-$(TZ=Asia/Kolkata date +%Y%m%d-%H%M).zip
-      - zip -r9 $ZIPNAME ./*
-      - curl -F document=@"$ZIPNAME" "https://api.telegram.org/bot$bottoken/sendDocument" -F chat_id="$chatid" -F "parse_mode=Markdown" -F caption="*✅ Build finished after $((DIFF / 60)) minute(s) and $((DIFF % 60)) seconds*"
-
+      - bash kernel_compile.sh
 trigger:
   branch:
   - master
