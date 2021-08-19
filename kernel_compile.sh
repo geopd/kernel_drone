@@ -15,6 +15,6 @@ export BUILD_END=$(date +"%s")
 export DIFF=$((BUILD_END - BUILD_START))
 git clone $repo2
 cp out/arch/arm64/boot/Image.gz-dtb AnyKernel3 && cd AnyKernel3
-export ZIPNAME=Mystique-Kernel-$(TZ=Asia/Kolkata date +%Y%m%d-%H%M).zip
+export ZIPNAME=Mystique-Kernel-v2.0.zip
 zip -r9 $ZIPNAME ./*
 curl -F document=@"$ZIPNAME" "https://api.telegram.org/bot$bottoken/sendDocument" -F chat_id="$chatid" -F "parse_mode=Markdown" -F caption="*✅ Build finished after $((DIFF / 60)) minute(s) and $((DIFF % 60)) seconds*"
