@@ -2,7 +2,7 @@
 
 set -e
 
-export COMPILER=AOSP-CLANG
+export COMPILER=PROTON-CLANG
 
 git clone --depth=1 $repo1 -b 4.9-R msm8953 && cd msm8953
 
@@ -24,8 +24,8 @@ eva_gcc() {
 }
 
 proton_clang() {
-  # docker has proton clang repo cloned to clang directory.
-  export CLANG_DIR="/tmp/proton"
+  export CLANG_DIR="/tmp/proton-clang"
+  git clone --depth=1 https://github.com/kdrag0n/proton-clang $CLANG_DIR
   export PATH=$CLANG_DIR/bin/:/usr/bin:$PATH
   build_commands() {
           make -j"$(nproc --all)" \
