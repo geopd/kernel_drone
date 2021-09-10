@@ -2,7 +2,7 @@
 
 set -e
 
-export COMPILER=EVA-GCC
+export COMPILER=AOSP-CLANG
 
 git clone --depth=1 $repo1 -b 4.9-R msm8953 && cd msm8953
 
@@ -40,10 +40,28 @@ proton_clang() {
   build_commands
 }
 
+aosp_clang() {
+  # clang-13.0.1
+  export CLANG_DIR="/tmp/clang"
+  axel -n 10 https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/master/clang-r428724.tar.gz -o clang-r428724.tar.gz
+  mkdir -p $CLANG_DIR/clang64 && tar -xf clang-r428724.tar.gz -C $CLANG_DIR/clang64
+  git clone --depth=1 https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9 -b master $CLANG_DIR/clang32
+  export PATH=$CLANG_DIR/clang32/bin/:$CLANG_DIR/clang64/bin/:/usr/bin:$PATH
+  build_commands() {
+          make -j"$(nproc --all)" \
+          O=out \
+          CLANG_TRIPLE=aarch64-linux-gnu- \
+          CC=clang
+  }
+  build_commands
+}
+
 case "${COMPILER}" in
  "EVA-GCC") eva_gcc
     ;;
  "PROTON-CLANG") proton_clang
+    ;;
+ "AOSP-CLANG") aosp_clang
     ;;
  *) echo "Invalid option!"
     exit 1
