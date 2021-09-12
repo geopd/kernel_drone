@@ -2,9 +2,9 @@
 
 set -e
 
-export COMPILER=EVA-GCC
+export COMPILER=SDCLANG
 
-git clone --depth=1 $repo1 -b 4.9-R msm8953 && cd msm8953
+git clone --depth=1 $repo1 -b 4.9-R-caf msm8953 && cd msm8953
 
 export BUILD_START=$(date +"%s")
 export ARCH=arm64
@@ -55,12 +55,31 @@ aosp_clang() {
   build_commands
 }
 
+sd_clang() {
+  export CLANG_DIR="/tmp/sdclang"
+  export GCC_DIR="/tmp/gcc/linux-x86"
+  git clone --depth=1 https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9 -b master $GCC_DIR
+  git clone --depth=1 https://github.com/ThankYouMario/proprietary_vendor_qcom_sdclang -b ruby-12 $CLANG_DIR
+  sudo link /lib/libtinfo.so.6 /lib/libtinfo.so.5
+  export PATH=$CLANG_DIR/bin/:$GCC_DIR/bin/:/usr/bin:$PATH
+  build_commands() {
+          make -j"$(nproc --all)" \
+          O=out \
+          CLANG_TRIPLE=aarch64-linux-gnu- \
+          CROSS_COMPILE=aarch64-linux-android- \
+          CC=clang
+  }
+  build_commands
+}
+
 case "${COMPILER}" in
  "EVA-GCC") eva_gcc
     ;;
  "PROTON-CLANG") proton_clang
     ;;
  "AOSP-CLANG") aosp_clang
+    ;;
+ "SDCLANG") sd_clang
     ;;
  *) echo "Invalid option!"
     exit 1
