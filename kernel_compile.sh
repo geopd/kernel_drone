@@ -2,9 +2,9 @@
 
 set -e
 
-export COMPILER=SDCLANG
+export COMPILER=EVA-GCC
 
-git clone --depth=1 $repo1 -b 4.9-R-caf msm8953 && cd msm8953
+git clone --depth=1 $repo1 -b 4.9-R msm8953 && cd msm8953
 
 export BUILD_START=$(date +"%s")
 export ARCH=arm64
